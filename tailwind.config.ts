@@ -10,5 +10,10 @@ export default {
       },
     },
   },
-  plugins: [],
+  daisyui: {
+    themes: ["retro", "light", "dark"]
+  },
+  plugins: [
+    require("daisyui")
+  ],
 } satisfies Config;

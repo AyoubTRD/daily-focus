@@ -4,7 +4,7 @@ A simple daily todo list for productivity.
 ## Progress
 
 - [x] Database Setup
-- [ ] Daisy UI
+- [x] Daisy UI
 - [ ] Authentication
 - [ ] Create a task
 - [ ] Edit a task
