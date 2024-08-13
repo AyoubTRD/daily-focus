@@ -3,13 +3,15 @@ A simple daily todo list for productivity.
 
 ## Progress
 
-- [ ] Database Setup
+- [x] Database Setup
 - [ ] Daisy UI
 - [ ] Authentication
-- [ ] Create a todo
-- [ ] Edit a todo
-- [ ] Delete a todo
-- [ ] Mark a todo as complete
-- [ ] Add notes to todos
-- [ ] Set todo categories
-- [ ] Filter todos by category
+- [ ] Create a task
+- [ ] Edit a task
+- [ ] Delete a task
+- [ ] Mark a task as complete
+- [ ] Add notes to tasks
+- [ ] Set tasks categories
+- [ ] Filter tasks by category
+- [ ] Add ability to create routines (a set of tasks that get created everyday automatically, can be set on which days specifically they should run, for example on work days only)
+- [ ] Add ability to activate multiple routines

@@ -8,6 +8,7 @@ import {
   serial,
   timestamp,
   varchar,
+  boolean
 } from "drizzle-orm/pg-core";
 
 /**
@@ -19,10 +20,11 @@ import {
 export const createTable = pgTableCreator((name) => `daily-focus_${name}`);
 
 export const posts = createTable(
-  "post",
+  "task",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
+    name: varchar("title", { length: 256 }),
+    isDone: boolean("is_done").default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -30,7 +32,4 @@ export const posts = createTable(
       () => new Date()
     ),
   },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
 );
