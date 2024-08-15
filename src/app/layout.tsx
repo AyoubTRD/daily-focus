@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import Link from "next/link";
+import { ClerkProvider, SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Daily Focus",
@@ -16,22 +17,30 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html data-theme="retro" lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <nav className="navbar container mx-auto">
-          <div className="flex-1">
-            <Link href={'/'} className="btn btn-ghost text-xl">
-              Daily Focus
-            </Link>
-          </div>
+    <ClerkProvider>
+      <html data-theme="retro" lang="en" className={`${GeistSans.variable}`}>
+        <body className="flex flex-col w-full min-h-screen">
+          <nav className="navbar container mx-auto">
+            <div className="flex-1">
+              <Link href={'/'} className="btn btn-ghost text-xl">
+                Daily Focus
+              </Link>
+            </div>
 
-          <div className="flex-none">
-            <Link href={'/signin'} className="btn btn-ghost">Sign in</Link>
-            <Link href={'/signup'} className="btn btn-ghost">Sign up</Link>
-          </div>
-        </nav>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-      </body>
-    </html>
+            <div className="flex-none">
+              <SignedOut>
+                <Link href={'/auth/login'} className="btn btn-ghost">Sign in</Link>
+                <Link href={'/auth/signup'} className="btn btn-ghost">Sign up</Link>
+              </SignedOut>
+
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+          </nav>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

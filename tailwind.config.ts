@@ -14,6 +14,7 @@ export default {
     themes: ["retro", "light", "dark"]
   },
   plugins: [
+    require("@tailwindcss/typography"),
     require("daisyui")
   ],
 } satisfies Config;

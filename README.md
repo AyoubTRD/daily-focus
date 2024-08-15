@@ -5,7 +5,8 @@ A simple daily todo list for productivity.
 
 - [x] Database Setup
 - [x] Daisy UI
-- [ ] Authentication
+- [x] Authentication
+- [x] Landing page
 - [ ] Create a task
 - [ ] Edit a task
 - [ ] Delete a task
