@@ -1,4 +1,5 @@
 # Daily Focus
+
 A simple daily todo list for productivity.
 
 ## Progress
@@ -7,10 +8,12 @@ A simple daily todo list for productivity.
 - [x] Daisy UI
 - [x] Authentication
 - [x] Landing page
-- [ ] Create a task
+- [x] Create a task
+- [ ] Show list of created tasks
 - [ ] Edit a task
 - [ ] Delete a task
 - [ ] Mark a task as complete
+- [ ] Keyboard shortcut to create a task
 - [ ] Add notes to tasks
 - [ ] Set tasks categories
 - [ ] Filter tasks by category

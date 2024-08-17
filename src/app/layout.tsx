@@ -1,11 +1,13 @@
 import "~/styles/globals.css";
+import "react-toastify/ReactToastify.min.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
-import Link from "next/link";
-import { ClerkProvider, SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Navbar } from "./_components/Navbar";
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
   title: "Daily Focus",
@@ -19,26 +21,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html data-theme="retro" lang="en" className={`${GeistSans.variable}`}>
-        <body className="flex flex-col w-full min-h-screen">
-          <nav className="navbar container mx-auto">
-            <div className="flex-1">
-              <Link href={'/'} className="btn btn-ghost text-xl">
-                Daily Focus
-              </Link>
-            </div>
+        <body className="flex min-h-screen w-full flex-col">
+          <Navbar />
 
-            <div className="flex-none">
-              <SignedOut>
-                <Link href={'/auth/login'} className="btn btn-ghost">Sign in</Link>
-                <Link href={'/auth/signup'} className="btn btn-ghost">Sign up</Link>
-              </SignedOut>
-
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </div>
-          </nav>
           <TRPCReactProvider>{children}</TRPCReactProvider>
+
+          <ToastContainer hideProgressBar />
         </body>
       </html>
     </ClerkProvider>

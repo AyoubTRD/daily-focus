@@ -19,12 +19,14 @@ import {
  */
 export const createTable = pgTableCreator((name) => `daily-focus_${name}`);
 
-export const posts = createTable(
+export const tasks = createTable(
   "task",
   {
     id: serial("id").primaryKey(),
-    name: varchar("title", { length: 256 }),
+    title: varchar("title", { length: 256 }).notNull(),
     isDone: boolean("is_done").default(false),
+
+    createdBy: varchar("created_by", { length: 256 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
