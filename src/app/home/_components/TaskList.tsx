@@ -2,7 +2,7 @@
 
 import { api } from "~/trpc/react";
 
-import { BadgeInfo, Check, Clock, Expand, Maximize, X } from "lucide-react";
+import { BadgeInfo, Check, Clock, MoreVertical, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { EmptyState } from "~/app/_components/EmptyState";
@@ -27,9 +27,28 @@ const TaskListItem: React.FC<{
         });
       },
     });
+  const { mutate: deleteTask, isPending: isDeleting } =
+    api.task.delete.useMutation({
+      async onSuccess() {
+        await utils.task.getAll.invalidate();
+      },
+
+      onError() {
+        toast("Failed to delete the task", {
+          type: "error",
+        });
+      },
+    });
 
   const handleStatusChange = () => {
     changeStatus({
+      id: props.id,
+      isDone: !props.isDone,
+    });
+  };
+
+  const handleDelete = () => {
+    deleteTask({
       id: props.id,
       isDone: !props.isDone,
     });
@@ -42,7 +61,35 @@ const TaskListItem: React.FC<{
         props.isDone ? "bg-base-200" : "bg-neutral text-neutral-content",
       )}
     >
-      <span className="font-semibold">{props.title}</span>
+      <div className="flex items-start justify-between">
+        <span
+          className="min-w-24 font-semibold focus:outline-none"
+          contentEditable
+        >
+          {props.title}
+        </span>
+
+        <details className="dropdown">
+          <summary className="btn btn-ghost btn-sm m-1 -translate-y-1">
+            <MoreVertical className="w-4" />
+          </summary>
+          <ul className="menu dropdown-content z-10 w-52 -translate-x-1/2 rounded-box bg-base-100 p-2 text-base-content shadow">
+            <li>
+              <button
+                disabled={isDeleting}
+                className="text-error"
+                onClick={handleDelete}
+              >
+                {isDeleting ? (
+                  <div className="loading loading-spinner loading-sm"></div>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </li>
+          </ul>
+        </details>
+      </div>
 
       <div className="flex justify-end gap-2">
         <button className="btn btn-ghost btn-sm">
@@ -74,9 +121,24 @@ const TaskListItem: React.FC<{
 };
 
 export const TaskList: React.FC = () => {
+  const startDate = useMemo(() => {
+    let day = moment();
+    if (moment().hour() < 4) {
+      day = moment().subtract(1, "days");
+    }
+    return day.startOf("day").add(4, "hours").toDate();
+  }, []);
+  const endDate = useMemo(() => {
+    let day = moment();
+    if (moment().hour() < 4) {
+      day = moment().subtract(1, "days");
+    }
+    return day.endOf("day").add(4, "hours").toDate();
+  }, []);
+
   const { status, data, error } = api.task.getAll.useQuery({
-    startDate: moment().startOf("day").add(4, "hours").toDate(),
-    endDate: moment().endOf("day").toDate(),
+    startDate,
+    endDate,
   });
 
   const [showDone, setShowDone] = useState(false);

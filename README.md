@@ -12,7 +12,7 @@ A simple daily todo list for productivity.
 - [x] Show list of created tasks
 - [x] Mark a task as complete
 - [ ] Edit a task
-- [ ] Delete a task
+- [x] Delete a task
 - [ ] Keyboard shortcut to create a task
 - [ ] Add notes to tasks
 - [ ] Set tasks categories

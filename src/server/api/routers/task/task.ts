@@ -4,9 +4,10 @@ import { createTaskInput } from "./inputs/CreateTask.input";
 import { privateProcedure } from "../../procedures/privateProcedure";
 import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
-import { and, eq, gte, lt } from "drizzle-orm";
+import { and, eq, gte, lt, ne } from "drizzle-orm";
 import { changeStatusInput } from "./inputs/ChangeStatus.input";
 import { getTasksInput } from "./inputs/GetTasks.input";
+import { TaskStatuses } from "~/lib/tasks/types/TaskStatus";
 
 export const taskRouter = createTRPCRouter({
   create: privateProcedure
@@ -44,6 +45,7 @@ export const taskRouter = createTRPCRouter({
             eq(tasks.createdBy, userId),
             gte(tasks.date, input.startDate),
             lt(tasks.date, input.endDate),
+            ne(tasks.status, TaskStatuses.DELETED),
           ),
         });
 
@@ -80,6 +82,36 @@ export const taskRouter = createTRPCRouter({
         };
       } catch (e) {
         console.error("[TASK] changeStatus", e);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }),
+
+  delete: privateProcedure
+    .input(changeStatusInput)
+    .mutation(async ({ ctx, input }) => {
+      const task = await db.query.tasks.findFirst({
+        where: eq(tasks.id, input.id),
+      });
+
+      if (task?.createdBy !== ctx.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You can only delete your own tasks.",
+        });
+      }
+
+      try {
+        await db
+          .update(tasks)
+          .set({ status: TaskStatuses.DELETED })
+          .where(eq(tasks.id, input.id));
+        return {
+          success: true,
+        };
+      } catch (e) {
+        console.error("[TASK] delete", e);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
         });
