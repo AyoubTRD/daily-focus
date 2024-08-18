@@ -9,10 +9,10 @@ A simple daily todo list for productivity.
 - [x] Authentication
 - [x] Landing page
 - [x] Create a task
-- [ ] Show list of created tasks
+- [x] Show list of created tasks
+- [x] Mark a task as complete
 - [ ] Edit a task
 - [ ] Delete a task
-- [ ] Mark a task as complete
 - [ ] Keyboard shortcut to create a task
 - [ ] Add notes to tasks
 - [ ] Set tasks categories

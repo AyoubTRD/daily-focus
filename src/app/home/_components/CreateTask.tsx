@@ -8,6 +8,8 @@ import { api } from "~/trpc/react";
 export function CreateTask() {
   const [title, setTitle] = useState("");
 
+  const utils = api.useUtils();
+
   const { mutate: createTask, isPending: isCreatingTask } =
     api.task.create.useMutation({
       onError(error) {
@@ -15,11 +17,10 @@ export function CreateTask() {
           type: "error",
         });
       },
-      onSuccess() {
+      async onSuccess() {
         setTitle("");
-        toast("Task created", {
-          type: "success",
-        });
+
+        await utils.task.getAll.invalidate();
       },
     });
 

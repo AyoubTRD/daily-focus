@@ -4,7 +4,9 @@ import { createTaskInput } from "./inputs/CreateTask.input";
 import { privateProcedure } from "../../procedures/privateProcedure";
 import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq, gte, lt } from "drizzle-orm";
+import { changeStatusInput } from "./inputs/ChangeStatus.input";
+import { getTasksInput } from "./inputs/GetTasks.input";
 
 export const taskRouter = createTRPCRouter({
   create: privateProcedure
@@ -29,20 +31,56 @@ export const taskRouter = createTRPCRouter({
       }
     }),
 
-  getAll: privateProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.userId!;
+  getAll: privateProcedure
+    .input(getTasksInput)
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session.userId!;
 
-    try {
-      const result = await db.query.tasks.findMany({
-        where: eq(tasks.createdBy, userId),
+      try {
+        const result = await db.query.tasks.findMany({
+          where: and(
+            eq(tasks.createdBy, userId),
+            gte(tasks.createdAt, input.startDate),
+            lt(tasks.createdAt, input.endDate),
+          ),
+        });
+
+        return result;
+      } catch (e) {
+        console.error("[TASK] getAll", e);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }),
+
+  changeStatus: privateProcedure
+    .input(changeStatusInput)
+    .mutation(async ({ ctx, input }) => {
+      const task = await db.query.tasks.findFirst({
+        where: eq(tasks.id, input.id),
       });
 
-      return result;
-    } catch (e) {
-      console.error("[TASK] getAll", e);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
-  }),
+      if (task?.createdBy !== ctx.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You can only change your own tasks.",
+        });
+      }
+
+      try {
+        await db
+          .update(tasks)
+          .set({ isDone: input.isDone })
+          .where(eq(tasks.id, input.id));
+        return {
+          success: true,
+        };
+      } catch (e) {
+        console.error("[TASK] changeStatus", e);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }),
 });
