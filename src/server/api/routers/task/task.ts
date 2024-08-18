@@ -18,6 +18,8 @@ export const taskRouter = createTRPCRouter({
         await db.insert(tasks).values({
           createdBy: userId,
           title: input.title,
+          status: input.status,
+          date: input.date,
         });
 
         return {
@@ -40,8 +42,8 @@ export const taskRouter = createTRPCRouter({
         const result = await db.query.tasks.findMany({
           where: and(
             eq(tasks.createdBy, userId),
-            gte(tasks.createdAt, input.startDate),
-            lt(tasks.createdAt, input.endDate),
+            gte(tasks.date, input.startDate),
+            lt(tasks.date, input.endDate),
           ),
         });
 

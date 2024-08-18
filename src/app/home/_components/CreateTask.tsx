@@ -1,11 +1,14 @@
 "use client";
 
 import clsx from "clsx";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { TaskStatuses } from "~/lib/tasks/types/TaskStatus";
 import { api } from "~/trpc/react";
 
 export function CreateTask() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const [title, setTitle] = useState("");
 
   const utils = api.useUtils();
@@ -24,6 +27,10 @@ export function CreateTask() {
       },
     });
 
+  useEffect(() => {
+    if (!isCreatingTask) inputRef.current?.focus();
+  }, [isCreatingTask]);
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -31,6 +38,7 @@ export function CreateTask() {
 
     createTask({
       title,
+      status: TaskStatuses.TODO,
     });
   };
 
@@ -43,6 +51,8 @@ export function CreateTask() {
         )}
       >
         <input
+          ref={inputRef}
+          autoFocus
           disabled={isCreatingTask}
           value={title}
           onChange={(e) => setTitle(e.target.value)}

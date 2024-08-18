@@ -8,7 +8,7 @@ import {
   serial,
   timestamp,
   varchar,
-  boolean
+  boolean,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -19,19 +19,19 @@ import {
  */
 export const createTable = pgTableCreator((name) => `daily-focus_${name}`);
 
-export const tasks = createTable(
-  "task",
-  {
-    id: serial("id").primaryKey(),
-    title: varchar("title", { length: 256 }).notNull(),
-    isDone: boolean("is_done").default(false),
+export const tasks = createTable("task", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 256 }).notNull(),
+  isDone: boolean("is_done").default(false),
 
-    createdBy: varchar("created_by", { length: 256 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
-    ),
-  },
-);
+  status: varchar("status", { length: 256 }).notNull(),
+  date: timestamp("date", { withTimezone: true }).notNull(),
+
+  createdBy: varchar("created_by", { length: 256 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+});
