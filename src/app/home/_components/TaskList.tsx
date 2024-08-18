@@ -75,7 +75,7 @@ const TaskListItem: React.FC<{
 
 export const TaskList: React.FC = () => {
   const { status, data, error } = api.task.getAll.useQuery({
-    startDate: moment().startOf("day").toDate(),
+    startDate: moment().startOf("day").add(4, "hours").toDate(),
     endDate: moment().endOf("day").toDate(),
   });
 
