@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, gte, lt, ne } from "drizzle-orm";
 import { changeStatusInput } from "./inputs/ChangeStatus.input";
 import { getTasksInput } from "./inputs/GetTasks.input";
+import { changeDateInput } from "./inputs/ChangeDate.input";
 import { TaskStatuses } from "~/lib/tasks/types/TaskStatus";
 
 export const taskRouter = createTRPCRouter({
@@ -116,5 +117,37 @@ export const taskRouter = createTRPCRouter({
           code: "INTERNAL_SERVER_ERROR",
         });
       }
+    }),
+
+  changeDate: privateProcedure
+    .input(changeDateInput)
+    .mutation(async ({ ctx, input }) => {
+      const task = await db.query.tasks.findFirst({
+        where: eq(tasks.id, input.taskId),
+      });
+
+      if (!task) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Task not found.",
+        });
+      }
+      if (task.createdBy !== ctx.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You can only change your own tasks.",
+        });
+      }
+
+      await db
+        .update(tasks)
+        .set({
+          date: input.newDate,
+        })
+        .where(eq(tasks.id, input.taskId));
+
+      return {
+        success: true,
+      };
     }),
 });
